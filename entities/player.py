@@ -1,5 +1,4 @@
-from entity import Entity
-
+from entities.entity import Entity
 
 class Player(Entity):
     

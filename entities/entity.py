@@ -2,6 +2,7 @@
 class Stats:
 
     def __init__(self,
+            max_hp = 1,
             hp  = 1,
             atk = 1,
             mag = 1,
@@ -9,12 +10,15 @@ class Stats:
             mdef = 1,
             spd = 1
             ):
+        self.max_hp = max_hp
         self.hp = hp
         self.atk = atk
         self.mag = mag
         self.defs = defs
         self.mdef = mdef
         self.spd = spd
+
+            
 
 
 class Entity:
@@ -23,6 +27,7 @@ class Entity:
         self.x = x
         self.y = y
         self.ent_id = ent_id
+        self.stats = Stats()
 
     def move(self, dx, dy):
         self.x += dx
@@ -33,3 +38,6 @@ class Entity:
 
     def get_pos(self):
         return (self.x, self.y)
+
+    def update_stats(self):
+        pass
