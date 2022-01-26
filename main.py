@@ -1,10 +1,13 @@
 import pygame as pyg
 import utilities as uts
 
+
 def main():
     pyg.init()
 
     screen = uts.Screen()
+    screen.set_area(uts.Area('./areas/01area.txt'))
+
     loop = True
     while loop:
         screen.draw()
