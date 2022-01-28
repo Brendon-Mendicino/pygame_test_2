@@ -1,8 +1,5 @@
 import sys
-
-
-GRASS = '*'
-ROCKS = '#'
+import pathlib
 
 
 class Area:
