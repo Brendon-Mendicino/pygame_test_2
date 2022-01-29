@@ -24,8 +24,8 @@ ASSETS_PATH = pathlib.Path(__file__).parent.absolute().__str__()+'/../assets/'
 
 
 
-def downsize( size, resize):
-    return (size[0]//resize, size[1]//resize)
+def downsize( size, scale):
+    return (size[0]//scale, size[1]//scale)
 
 
 class Screen:
@@ -48,6 +48,8 @@ class Screen:
 
         self.display_x_offset = 0
         self.display_y_offset = 0
+        self.display_dx = 0
+        self.display_dy = 0
 
         flags = pyg.FULLSCREEN
         self.window_surface = pyg.display.set_mode(self.window_size)
@@ -61,9 +63,12 @@ class Screen:
                 GRASS: pyg.image.load(ASSETS_PATH+'tiles/grass.png'),
                 }
 
-    def update_display_offset(self, offset):
-        self.display_y_offset += offset[0]
-        self.display_y_offset += offset[1]
+    def display_offset_speed(self, speed):
+        self.display_dx += speed[0]
+        self.display_dy += speed[1]
+
+    def display_offset_speed_reset(self):
+        self.display_dx, self.display_dy = 0, 0
 
     def set_area(self, curr_area: Area):
         self.current_area = curr_area
@@ -82,10 +87,14 @@ class Screen:
 
     def draw(self):
         self.window_surface.fill((0, 0, 0))
+        
+        self.display_x_offset += self.display_dx
+        self.display_y_offset += self.display_dy
     
         # Display drawing -----------------
         x_start, y_start = self.display_x_offset // TILE_LEN, self.display_y_offset // TILE_LEN
         x_off, y_off = self.display_x_offset % TILE_LEN, self.display_y_offset % TILE_LEN
+
         for i, row in enumerate(self.current_area.get_tiles()[y_start:y_start+10]):
             for j, tile in enumerate(row[x_start:x_start+17]):
                 self.display.blit(

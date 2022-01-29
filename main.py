@@ -1,5 +1,4 @@
 #!/bin/python3
-#!/bin/python3
 
 import time
 import threading as th
@@ -15,8 +14,21 @@ def main():
     screen.set_area(uts.Area('./areas/01area.txt'))
 
     clock = pyg.time.Clock()
-    FPS = 10
+    FPS = 60
     loop = True
+
+    event_key_case_down = {
+            pyg.K_DOWN: (0, 1),
+            pyg.K_UP: (0, -1),
+            pyg.K_RIGHT: (1, 0),
+            pyg.K_LEFT: (-1, 0),
+            }
+    event_key_case_up = {
+            pyg.K_DOWN: (0, -1),
+            pyg.K_UP: (0, 1),
+            pyg.K_RIGHT: (-1, 0),
+            pyg.K_LEFT: (1, 0),
+            }
 
     while loop:
         clock.tick(FPS)
@@ -27,6 +39,11 @@ def main():
             if event.type == pyg.KEYDOWN:
                 if event.key == pyg.K_ESCAPE:
                     loop = False
+                else:
+                    screen.display_offset_speed( event_key_case_down[event.key])
+
+            if event.type == pyg.KEYUP:
+                screen.display_offset_speed(event_key_case_up[event.key])
 
         screen.draw()
 
