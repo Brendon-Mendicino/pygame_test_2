@@ -19,6 +19,8 @@ TILESET_LOOKUP_TABLE = {
         }
 
 TILE_LEN = 30
+TILE_ON_SCREEN_W = 16
+TILE_ON_SCREEN_H = 9
 
 ASSETS_PATH = pathlib.Path(__file__).parent.absolute().__str__()+'/../assets/'
 
@@ -28,15 +30,16 @@ def downsize( size, scale):
     return (size[0]//scale, size[1]//scale)
 
 
+
 class Screen:
 
     def __init__(self):
         self.entities = {}
-        self.ent_assets = []
+        self.assets_info = []   # -> [ [type, [asset_to_show, ...]], ...]
+        self.assets_list = []
 
         self.current_area = None
         self.tileset = {}
-        #self.tileset_path = ASSETS_PATH+'tiles/tileset.png'
         self.load_tileset_assets()
         
         self.info = pyg.display.Info()
@@ -44,7 +47,7 @@ class Screen:
         self.DESKTOP_HEIGHT = self.info.current_h
 
         self.window_size = (self.DESKTOP_WIDTH*2//3, self.DESKTOP_HEIGHT*2//3)
-        self.display_size = (16*TILE_LEN, 9*TILE_LEN)
+        self.display_size = (TILE_ON_SCREEN_W*TILE_LEN, TILE_ON_SCREEN_H*TILE_LEN)
 
         self.display_x_offset = 0
         self.display_y_offset = 0
@@ -86,7 +89,6 @@ class Screen:
         pass
 
     def draw(self):
-        self.window_surface.fill((0, 0, 0))
         
         self.display_x_offset += self.display_dx
         self.display_y_offset += self.display_dy
@@ -95,11 +97,13 @@ class Screen:
         x_start, y_start = self.display_x_offset // TILE_LEN, self.display_y_offset // TILE_LEN
         x_off, y_off = self.display_x_offset % TILE_LEN, self.display_y_offset % TILE_LEN
 
-        for i, row in enumerate(self.current_area.get_tiles()[y_start:y_start+10]):
-            for j, tile in enumerate(row[x_start:x_start+17]):
+        for i, row in enumerate(self.current_area.get_tiles()[y_start:y_start+TILE_ON_SCREEN_H+1]):
+            for j, tile in enumerate(row[x_start:x_start+TILE_ON_SCREEN_W+1]):
                 self.display.blit(
                         self.tileset[tile],
                         (j*TILE_LEN-x_off, i*TILE_LEN-y_off))
+
+        # Entity drawing ------------------
 
         self.window_surface.blit(pyg.transform.scale(self.display, self.window_size), (0, 0))
         pyg.display.flip()
