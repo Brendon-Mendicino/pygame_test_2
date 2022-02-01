@@ -4,6 +4,7 @@ import time
 import threading as th
 import pygame as pyg
 import utilities as uts
+import entities as ent
 
 
 
@@ -12,6 +13,10 @@ def main():
 
     screen = uts.Screen()
     screen.set_area(uts.Area('./areas/01area.txt'))
+
+    pp = ent.Player(0, (30, 30))
+    pp.set_animation_type()
+    screen.add_entity( pp)
 
     clock = pyg.time.Clock()
     FPS = 60
@@ -45,6 +50,7 @@ def main():
             if event.type == pyg.KEYUP:
                 screen.display_offset_speed(event_key_case_up[event.key])
 
+        pp.update_sprite()
         screen.draw()
 
     pyg.quit()
