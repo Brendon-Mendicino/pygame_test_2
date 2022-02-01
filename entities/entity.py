@@ -96,10 +96,10 @@ class Entity:
     def update_sprite(self):
         self.curr_sprite_show = (self.curr_sprite_show + 1) % self.curr_sprite_vector_len
 
-    def get_pos(self):
+    def get_pos(self) -> tuple:
         return (self.x, self.y)
 
-    def get_size(self):
+    def get_size(self) -> tuple:
         return self.size
 
     def update_stats(self):

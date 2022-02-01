@@ -14,8 +14,8 @@ def main():
     screen = uts.Screen()
     screen.set_area(uts.Area('./areas/01area.txt'))
 
-    pp = ent.Player(0, (30, 30))
-    pp.set_animation_type()
+    pp = ent.Player(0, (150, 150))
+    pp.set_animation_type(ent.IDLE)
     screen.add_entity( pp)
 
     clock = pyg.time.Clock()

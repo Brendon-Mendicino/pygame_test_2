@@ -34,7 +34,7 @@ def downsize( size, scale):
 class Screen:
 
     def __init__(self):
-        self.entities = {}
+        self.entities = { 0: ent.Player(0, (0, 0)) }
         self.assets_info = []   # -> [ [type, [asset_to_show, ...]], ...]
         self.assets_list = {}
         self.ent_to_draw = []
@@ -90,24 +90,27 @@ class Screen:
     def draw_on_display(self):
         pass
 
-    def is_inside_display(self, pos):
+    def is_inside_display(self, pos, size):
         disp_x_len = self.display_x_offset + self.display_size[0]
         disp_y_len = self.display_y_offset + self.display_size[1]
 
-        if self.display_x_offset < pos[0] and disp_x_len > pos[0]:
-            if self.display_y_offset < pos[1] and disp_y_len > pos[1]:
+        if self.display_x_offset < pos[0]+size[0] and disp_x_len > pos[0]:
+            if self.display_y_offset < pos[1]+size[1] and disp_y_len > pos[1]:
                 return True
         return False
 
     def update_entities_to_draw(self):
         self.ent_to_draw.clear()
-        for ent in list(self.entities.values()):
-            if self.is_inside_display(ent.get_pos()):
-                self.ent_to_draw.append(ent.get_ent_id())
+        for enty in list(self.entities.values()):
+            if self.is_inside_display(enty.get_pos(), enty.get_size()):
+                self.ent_to_draw.append(enty.get_ent_id())
 
     def get_sprite_by_id(self, id):
         sprite_id = self.entities[id].get_current_sprite_info()
         return self.assets_list[id][sprite_id[0]][sprite_id[1]]
+
+    def center_sprite_pos(self, pos):
+        return (pos[0]-self.display_x_offset, pos[1]-self.display_y_offset)
 
     def draw(self):
         self.update_entities_to_draw()
@@ -127,7 +130,7 @@ class Screen:
 
         # Entity drawing ------------------
         for id in self.ent_to_draw:
-            self.display.blit(self.get_sprite_by_id(id), self.entities[id].get_pos())
+            self.display.blit(self.get_sprite_by_id(id), self.center_sprite_pos(self.entities[id].get_pos()))
         
 
         self.window_surface.blit(pyg.transform.scale(self.display, self.window_size), (0, 0))
