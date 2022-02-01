@@ -10,3 +10,5 @@ class Player(Entity):
         super().add_assets(0, [0, 1, 2, 3],
                 [ASSETS_PATH+'player/player_main_'+end for end in ['front.png', 'left.png', 'right.png', 'back.png']])
 
+    def get_input_speed(self, speed):
+        super().move(speed[0], speed[1])

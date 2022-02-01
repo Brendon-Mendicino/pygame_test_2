@@ -53,6 +53,8 @@ class Entity:
         self.ent_id = ent_id
         self.x = pos[0]
         self.y = pos[1]
+        self.dx = 0
+        self.dy = 0
         self.size = size
 
         self.curr_animation_type = IDLE
@@ -101,6 +103,17 @@ class Entity:
 
     def get_size(self) -> tuple:
         return self.size
+
+    def get_center(self) -> tuple:
+        return (self.x+self.size[0], self.y+self.size[1])
+
+    def update_position(self):
+        self.x += self.dx
+        self.y += self.dy
+
+    def set_offset_speed(self, speed):
+        self.dx += speed[0]
+        self.dy += speed[1]
 
     def update_stats(self):
         pass

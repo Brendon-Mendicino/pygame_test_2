@@ -14,7 +14,7 @@ def main():
     screen = uts.Screen()
     screen.set_area(uts.Area('./areas/01area.txt'))
 
-    pp = ent.Player(0, (150, 150))
+    pp = ent.Player(0, (240, 150))
     pp.set_animation_type(ent.IDLE)
     screen.add_entity( pp)
 
@@ -45,12 +45,16 @@ def main():
                 if event.key == pyg.K_ESCAPE:
                     loop = False
                 else:
-                    screen.display_offset_speed( event_key_case_down[event.key])
+                    pp.set_offset_speed(event_key_case_down[event.key])
 
             if event.type == pyg.KEYUP:
-                screen.display_offset_speed(event_key_case_up[event.key])
+                pp.set_offset_speed(event_key_case_up[event.key])
 
         pp.update_sprite()
+        pp.update_position()
+
+        screen.update_entities_to_draw()
+        screen.update_display_position(pp.get_center())
         screen.draw()
 
     pyg.quit()
@@ -59,3 +63,4 @@ def main():
 
 if __name__=="__main__":
     main()
+
