@@ -1,3 +1,4 @@
+import utilities as util
 import pygame as pyg
 
 # TODO: set a table for all possible animations
@@ -28,22 +29,34 @@ class Stats:
 
 class EntityAsset:
 
-    def __init__(self, type, animations_frames, sprites_paths):
+    def __init__(self, type, frames_speed, animation_frames, sprites_paths):
+        '''
+        type: animation type
+        frames_speed: number of frames showed every second
+        animation_frames: 
+        sprites_paths: absolute path of the current sprites path
+        '''
         self.type = type
-        self.animations_frames = animations_frames
+        self.frames_speed = frames_speed        # frames showed every second
+        self.animation_frames = animation_frames
         self.sprites_paths = sprites_paths
 
     def get_type(self):
         return type
 
-    def get_animations_frames(self):
-        return self.animations_frames
+    def get_animation_frames(self):
+        return self.animation_frames
+
+    def get_frames_speed(self):
+        return self.frames_speed
 
     def get_sprites_paths(self):
         return self.sprites_paths
 
 
 class Entity:
+    scale = 100
+    sentinel_asset = EntityAsset(-1, 0, [], [])
 
     def __init__(self, ent_id, pos, size):
         '''
@@ -51,26 +64,26 @@ class Entity:
         size: size dello sprite
         '''
         self.ent_id = ent_id
-        self.x = pos[0]
-        self.y = pos[1]
-        self.dx = 0
-        self.dy = 0
+        self.x = pos[0]*self.scale
+        self.y = pos[1]*self.scale
+        self.delta_vx = 0
+        self.delta_vy = 0
         self.size = size
 
         self.curr_animation_type = IDLE
         self.curr_sprite_show = 0
         self.curr_sprite_vector_len = 0
-        self.assets = [EntityAsset(-1, [], []) for n in range(NUMBER_OF_ANIMATION_TYPE)]
+        self.assets = [self.sentinel_asset for n in range(NUMBER_OF_ANIMATION_TYPE)]
 
         self.stats = Stats()
 
-    def add_assets(self, type, animations_frames, sprites_paths):
-        self.assets[type] = EntityAsset(type, animations_frames, sprites_paths)
+    def add_assets(self, type, frames_speed, animation_frames, sprites_paths):
+        self.assets[type] = EntityAsset(type, frames_speed, animation_frames, sprites_paths)
 
     def get_sprites(self):
         assets_list = []
         for asset_type in self.assets:
-            if asset_type.get_type() == -1:
+            if asset_type == self.sentinel_asset:
                 assets_list.append(None)
             else:
                 assets_list.append( [pyg.image.load(sprite) for sprite in asset_type.get_sprites_paths()] )
@@ -78,14 +91,14 @@ class Entity:
         return assets_list
 
     def get_current_animation_info(self):
-        return [self.curr_animation_type, self.assets[self.curr_animation_type].get_animations_frames()]
+        return [self.curr_animation_type, self.assets[self.curr_animation_type].get_animation_frames()]
 
     def get_current_sprite_info(self):
         return [self.curr_animation_type, self.curr_sprite_show]
 
-    def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
+    def move(self, delta_x, delta_y):
+        self.x += delta_x
+        self.y += delta_y
 
     def get_ent_id(self):
         return self.ent_id
@@ -93,27 +106,33 @@ class Entity:
     def set_animation_type(self, type):
         self.curr_animation_type = type
         self.curr_sprite_show = 0
-        self.curr_sprite_vector_len = len(self.assets[type].get_animations_frames())
+        self.curr_sprite_vector_len = len(self.assets[type].get_animation_frames())
 
     def update_sprite(self):
         self.curr_sprite_show = (self.curr_sprite_show + 1) % self.curr_sprite_vector_len
 
     def get_pos(self) -> tuple:
-        return (self.x, self.y)
+        return (self.x//self.scale, self.y//self.scale)
 
     def get_size(self) -> tuple:
         return self.size
 
     def get_center(self) -> tuple:
-        return (self.x+self.size[0], self.y+self.size[1])
+        return (self.x//self.scale+self.size[0], self.y//self.scale+self.size[1])
 
-    def update_position(self):
-        self.x += self.dx
-        self.y += self.dy
+    def update_position(self, delta_t):
+        # time in 'ms'
+        self.x += self.delta_vx * delta_t >> 3
+        self.y += self.delta_vy * delta_t >> 3
+        # division by 8, a bit faster than dividing by 10
 
-    def set_offset_speed(self, speed):
-        self.dx += speed[0]
-        self.dy += speed[1]
+    def set_offset_speed(self, velocity):
+        '''
+        The velocity is equal to: 100 mpx/s
+        ~> 100 millipixel/second
+        '''
+        self.delta_vx += velocity[0]
+        self.delta_vy += velocity[1]
 
     def update_stats(self):
         pass

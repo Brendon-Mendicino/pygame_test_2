@@ -35,7 +35,7 @@ class Screen:
 
     def __init__(self):
         self.entities = { 0: ent.Player(0, (0, 0)), }  # for testing
-        self.assets_list = {}
+        self.sprites_list = {}
         self.ent_to_draw = []  # [>id [>anim_type [>frame, ...], ...], ...]
 
         self.current_area = None
@@ -81,7 +81,7 @@ class Screen:
 
     def add_entity(self, entity: ent.Entity):
         self.entities[entity.get_ent_id()] = entity
-        self.assets_list[entity.get_ent_id()] = entity.get_sprites()
+        self.sprites_list[entity.get_ent_id()] = entity.get_sprites()
 
     def get_entities(self):
         return self.entities
@@ -106,7 +106,7 @@ class Screen:
 
     def get_sprite_by_id(self, id):
         sprite_id = self.entities[id].get_current_sprite_info()
-        return self.assets_list[id][sprite_id[0]][sprite_id[1]]
+        return self.sprites_list[id][sprite_id[0]][sprite_id[1]]
 
     def center_sprite_pos(self, pos):
         return (pos[0]-self.display_x_offset, pos[1]-self.display_y_offset)
@@ -116,6 +116,7 @@ class Screen:
         self.display_y_offset = new_center[1] - self.display_size[1] // 2
 
     def draw(self):
+        self.display.fill((0, 0, 0))
         # Area drawing -----------------
         x_start, y_start = self.display_x_offset // TILE_LEN, self.display_y_offset // TILE_LEN
         x_off, y_off = self.display_x_offset % TILE_LEN, self.display_y_offset % TILE_LEN
@@ -132,7 +133,6 @@ class Screen:
                     self.get_sprite_by_id(id),
                     self.center_sprite_pos(self.entities[id].get_pos()))
         
-
         self.window_surface.blit(pyg.transform.scale(self.display, self.window_size), (0, 0))
         pyg.display.update()
 

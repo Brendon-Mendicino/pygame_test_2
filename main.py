@@ -22,21 +22,24 @@ def main():
     FPS = 60
     loop = True
 
+    vel = 50
     event_key_case_down = {
-            pyg.K_DOWN: (0, 1),
-            pyg.K_UP: (0, -1),
-            pyg.K_RIGHT: (1, 0),
-            pyg.K_LEFT: (-1, 0),
+            pyg.K_DOWN: (0, vel),
+            pyg.K_UP: (0, -vel),
+            pyg.K_RIGHT: (vel, 0),
+            pyg.K_LEFT: (-vel, 0),
             }
     event_key_case_up = {
-            pyg.K_DOWN: (0, -1),
-            pyg.K_UP: (0, 1),
-            pyg.K_RIGHT: (-1, 0),
-            pyg.K_LEFT: (1, 0),
+            pyg.K_DOWN: (0, -vel),
+            pyg.K_UP: (0, vel),
+            pyg.K_RIGHT: (-vel, 0),
+            pyg.K_LEFT: (vel, 0),
             }
 
+    delta_t = 0
     while loop:
-        clock.tick(FPS)
+        # time in 'ms'
+        delta_t = clock.tick(FPS)
 
         for event in pyg.event.get():
             if event.type == pyg.QUIT:
@@ -51,7 +54,7 @@ def main():
                 pp.set_offset_speed(event_key_case_up[event.key])
 
         pp.update_sprite()
-        pp.update_position()
+        pp.update_position(delta_t)
 
         screen.update_entities_to_draw()
         screen.update_display_position(pp.get_center())
