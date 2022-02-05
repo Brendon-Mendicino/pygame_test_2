@@ -57,7 +57,7 @@ def main():
         pp.update_position(delta_t)
 
         screen.update_entities_to_draw()
-        screen.update_display_position(pp.get_center())
+        screen.update_display_position(pp.get_center_pos())
         screen.draw()
 
     pyg.quit()

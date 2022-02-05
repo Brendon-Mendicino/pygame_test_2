@@ -1,6 +1,5 @@
 import utilities as util
 import pygame as pyg
-import math
 
 # TODO: set a table for all possible animations
 IDLE = 0
@@ -69,9 +68,7 @@ class Entity:
         self.y = pos[1]*self.scale
         self.delta_vx = 0
         self.delta_vy = 0
-        self.size = (size[0]*self.scale, size[1]*self.scale)
-        self.scale_factor = 1 * self.scale
-        self.previous_scale_factor = self.scale_factor
+        self.size = size
 
         self.curr_animation_type = IDLE
         self.curr_sprite_show = 0
@@ -80,31 +77,8 @@ class Entity:
 
         self.stats = Stats()
 
-    def get_ent_id(self):
-        return self.ent_id
-
-    def get_pos(self) -> tuple:
-        return (self.x//self.scale, self.y//self.scale)
-
-    def get_size(self) -> tuple:
-        return (self.size[0]//self.scale, self.size[1]//self.scale)
-
-    def get_center_pos(self) -> tuple:
-        return ((self.x+self.size[0])//self.scale, (self.y+self.size[1])//self.scale)
-
-    def set_scale(self, scale: float):
-        # the scale factore is scaled to 100 to eliminte the float type and use int calculus
-        self.previous_scale_factor = self.scale_factor
-        self.scale_factor = math.floor(scale*self.scale)
-        self.update_to_new_scale()
-
-    def set_offset_speed(self, velocity):
-        '''
-        The velocity is equal to: 100 mpx/s
-        ~> 100 millipixel/second
-        '''
-        self.delta_vx += velocity[0]
-        self.delta_vy += velocity[1]
+    def set_scale(self, scale):
+        self.scale = scale
 
     def add_assets(self, type, frames_speed, animation_frames, sprites_paths):
         self.assets[type] = EntityAsset(type, frames_speed, animation_frames, sprites_paths)
@@ -129,6 +103,9 @@ class Entity:
         self.x += delta_x
         self.y += delta_y
 
+    def get_ent_id(self):
+        return self.ent_id
+
     def set_animation_type(self, type):
         self.curr_animation_type = type
         self.curr_sprite_show = 0
@@ -137,17 +114,28 @@ class Entity:
     def update_sprite(self):
         self.curr_sprite_show = (self.curr_sprite_show + 1) % self.curr_sprite_vector_len
 
+    def get_pos(self) -> tuple:
+        return (self.x//self.scale, self.y//self.scale)
+
+    def get_size(self) -> tuple:
+        return self.size
+
+    def get_center(self) -> tuple:
+        return (self.x//self.scale+self.size[0], self.y//self.scale+self.size[1])
+
     def update_position(self, delta_t):
         # time in 'ms'
         self.x += self.delta_vx * delta_t >> 3
         self.y += self.delta_vy * delta_t >> 3
         # division by 8, a bit faster than dividing by 10
 
-    def update_to_new_scale(self):
-        self.x = self.x * self.scale_factor // self.previous_scale_factor
-        self.y = self.y * self.scale_factor // self.previous_scale_factor
-        self.size = (self.size[0]*self.scale_factor//self.previous_scale_factor,
-                    self.size[1]*self.scale_factor//self.previous_scale_factor)
+    def set_offset_speed(self, velocity):
+        '''
+        The velocity is equal to: 100 mpx/s
+        ~> 100 millipixel/second
+        '''
+        self.delta_vx += velocity[0]
+        self.delta_vy += velocity[1]
 
     def update_stats(self):
         pass

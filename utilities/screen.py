@@ -1,5 +1,6 @@
 import os
 import pathlib
+import math
 import pygame as pyg
 import entities as ent
 import utilities.area as area
@@ -22,8 +23,16 @@ TILE_LEN = 30
 TILE_ON_SCREEN_W = 16
 TILE_ON_SCREEN_H = 9
 
-ASSETS_PATH = pathlib.Path(__file__).parent.absolute().__str__()+'/../assets/'
+SCREEN_RESOLUTIONS = {
+        0: (1920, 1080),
+        1: (1600,  900),
+        2: (1440,  810),
+        3: (1280,  720),
+        4: ( 480,  270),
+        }
 
+
+ASSETS_PATH = pathlib.Path(__file__).parent.absolute().__str__()+'/../assets/'
 
 
 def downsize( size, scale):
@@ -34,20 +43,13 @@ def downsize( size, scale):
 class Screen:
 
     def __init__(self):
-        self.entities = { 0: ent.Player(0, (0, 0)), }  # for testing
-        self.sprites_list = {}
-        self.ent_to_draw = []  # [>id [>anim_type [>frame, ...], ...], ...]
-
-        self.current_area = None
-        self.tileset = {}
-        self.load_tileset_assets()
-        
         self.info = pyg.display.Info()
         self.DESKTOP_WIDTH  = self.info.current_w
         self.DESKTOP_HEIGHT = self.info.current_h
 
-        self.window_size = (self.DESKTOP_WIDTH*2//3, self.DESKTOP_HEIGHT*2//3)
-        self.display_size = (TILE_ON_SCREEN_W*TILE_LEN, TILE_ON_SCREEN_H*TILE_LEN)
+        self.display_size = SCREEN_RESOLUTIONS[3]
+        self.scale_factor = self.display_size[0] / (TILE_LEN * TILE_ON_SCREEN_W)
+        self.tile_len_scaled = math.floor( TILE_LEN * self.scale_factor)
 
         self.display_x_offset = 0
         self.display_y_offset = 0
@@ -55,15 +57,26 @@ class Screen:
         self.display_dy = 0
 
         flags = pyg.FULLSCREEN
-        self.window_surface = pyg.display.set_mode(self.window_size)
-        self.display = pyg.Surface(self.display_size)
+        self.display = pyg.display.set_mode(self.display_size)
+
+        self.entities = { 0: ent.Player(0, (0, 0)), }  # for testing
+        self.sprites_list = {} 
+        self.ent_to_draw = []  # [>id [>anim_type [>frame, ...], ...], ...]
+
+        self.current_area = None
+        self.tileset = {}
+        self.load_tileset_assets()
+        
         
 
     # TODO: test, first try for blitting images
     def load_tileset_assets(self):
+        rocks = pyg.image.load(ASSETS_PATH+'tiles/rocks.png')
+        grass = pyg.image.load(ASSETS_PATH+'tiles/grass.png')
+
         self.tileset = {
-                ROCKS: pyg.image.load(ASSETS_PATH+'tiles/rocks.png'),
-                GRASS: pyg.image.load(ASSETS_PATH+'tiles/grass.png'),
+                ROCKS: self.scale_surface(rocks),
+                GRASS: self.scale_surface(grass),
                 }
 
     def display_offset_speed(self, speed):
@@ -79,15 +92,22 @@ class Screen:
     def get_area(self):
         return self.current_area
 
+    def scale_surface(self, sprite: pyg.Surface):
+        return pyg.transform.scale(sprite,
+                (math.floor(sprite.get_size()[0]*self.scale_factor), math.floor(sprite.get_size()[1]*self.scale_factor)))
+
     def add_entity(self, entity: ent.Entity):
+        # TODO: push this to the handler
+        entity.set_scale(self.scale_factor)
+        # -------------------
         self.entities[entity.get_ent_id()] = entity
-        self.sprites_list[entity.get_ent_id()] = entity.get_sprites()
+        sprites_scaled = []
+        for s_list in entity.get_sprites():
+            sprites_scaled.append([self.scale_surface(s) for s in s_list])
+        self.sprites_list[entity.get_ent_id()] = sprites_scaled
 
     def get_entities(self):
         return self.entities
-
-    def draw_on_display(self):
-        pass
 
     def is_inside_display(self, pos, size):
         disp_x_len = self.display_x_offset + self.display_size[0]
@@ -118,14 +138,17 @@ class Screen:
     def draw(self):
         self.display.fill((0, 0, 0))
         # Area drawing -----------------
-        x_start, y_start = self.display_x_offset // TILE_LEN, self.display_y_offset // TILE_LEN
-        x_off, y_off = self.display_x_offset % TILE_LEN, self.display_y_offset % TILE_LEN
+        x_start = self.display_x_offset // self.tile_len_scaled
+        y_start = self.display_y_offset // self.tile_len_scaled
+        x_off = self.display_x_offset % self.tile_len_scaled
+        y_off = self.display_y_offset % self.tile_len_scaled
 
+        # The display can't go above the 0 limit of the matrix
         for i, row in enumerate(self.current_area.get_tiles()[y_start:y_start+TILE_ON_SCREEN_H+1]):
-            for j, tile in enumerate(row[x_start:x_start+TILE_ON_SCREEN_W+1]):
+            for j, tile_id in enumerate(row[x_start:x_start+TILE_ON_SCREEN_W+1]):
                 self.display.blit(
-                        self.tileset[tile],
-                        (j*TILE_LEN-x_off, i*TILE_LEN-y_off))
+                        self.tileset[tile_id],
+                        (j*self.tile_len_scaled-x_off, i*self.tile_len_scaled-y_off))
 
         # Entity drawing ------------------
         for id in self.ent_to_draw:
@@ -133,7 +156,7 @@ class Screen:
                     self.get_sprite_by_id(id),
                     self.center_sprite_pos(self.entities[id].get_pos()))
         
-        self.window_surface.blit(pyg.transform.scale(self.display, self.window_size), (0, 0))
+        #self.window_surface.blit(pyg.transform.scale(self.display, self.window_size), (0, 0))
         pyg.display.update()
 
 
