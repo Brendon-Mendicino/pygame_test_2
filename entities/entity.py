@@ -103,8 +103,8 @@ class Entity:
         The velocity is equal to: 100 mpx/s
         ~> 100 millipixel/second
         '''
-        self.delta_vx += velocity[0]
-        self.delta_vy += velocity[1]
+        self.delta_vx += math.floor(velocity[0]*self.scale_factor)
+        self.delta_vy += math.floor(velocity[1]*self.scale_factor)
 
     def add_assets(self, type, frames_speed, animation_frames, sprites_paths):
         self.assets[type] = EntityAsset(type, frames_speed, animation_frames, sprites_paths)
@@ -141,7 +141,7 @@ class Entity:
         # time in 'ms'
         self.x += self.delta_vx * delta_t >> 3
         self.y += self.delta_vy * delta_t >> 3
-        # division by 8, a bit faster than dividing by 10
+        # division by 8: faster than dividing by 10 with int division
 
     def update_to_new_scale(self):
         self.x = self.x * self.scale_factor // self.previous_scale_factor

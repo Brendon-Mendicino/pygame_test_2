@@ -7,6 +7,10 @@ import utilities as uts
 import entities as ent
 
 
+class Handler:
+    def __init__(self):
+        pass
+
 
 def main():
     pyg.init()
@@ -22,7 +26,7 @@ def main():
     FPS = 60
     loop = True
 
-    vel = 50
+    vel = 0.4
     event_key_case_down = {
             pyg.K_DOWN: (0, vel),
             pyg.K_UP: (0, -vel),
