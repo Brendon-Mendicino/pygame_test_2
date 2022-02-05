@@ -48,7 +48,7 @@ class Screen:
         self.DESKTOP_HEIGHT = self.info.current_h
 
         self.display_size = SCREEN_RESOLUTIONS[3]
-        self.scale_factor = self.display_size[0] / (TILE_LEN * TILE_ON_SCREEN_W)
+        self.scale_factor = self.find_scale_factor()
         self.tile_len_scaled = math.floor( TILE_LEN * self.scale_factor)
 
         self.display_x_offset = 0
@@ -56,7 +56,7 @@ class Screen:
         self.display_dx = 0
         self.display_dy = 0
 
-        flags = pyg.FULLSCREEN
+        self.flags = pyg.FULLSCREEN
         self.display = pyg.display.set_mode(self.display_size)
 
         self.entities = { 0: ent.Player(0, (0, 0)), }  # for testing
@@ -79,6 +79,22 @@ class Screen:
                 GRASS: self.scale_surface(grass),
                 }
 
+    def find_scale_factor(self):
+        return self.display_size[0] / (TILE_LEN * TILE_ON_SCREEN_W)
+
+    def set_window_resolution(self, res):
+        self.display_size = SCREEN_RESOLUTIONS[res]
+        self.scale_factor = self.find_scale_factor()
+        self.tile_len_scaled = math.floor( TILE_LEN * self.scale_factor)
+
+        self.display = pyg.display.set_mode(self.display_size)
+
+        self.load_tileset_assets()
+        for ent_id in list(self.entities.keys()):
+            self.entities[ent_id].set_scale(self.scale_factor)
+            self.sprites_list[ent_id] = self.scale_all_sprites_list(self.entities[ent_id].get_sprites())
+            
+
     def display_offset_speed(self, speed):
         self.display_dx += speed[0]
         self.display_dy += speed[1]
@@ -96,15 +112,19 @@ class Screen:
         return pyg.transform.scale(sprite,
                 (math.floor(sprite.get_size()[0]*self.scale_factor), math.floor(sprite.get_size()[1]*self.scale_factor)))
 
+    def scale_all_sprites_list(self, all_sprites):
+        sprites_scaled = []
+        for s_list in all_sprites:
+            sprites_scaled.append([self.scale_surface(s) for s in s_list])
+        return sprites_scaled
+        
+
     def add_entity(self, entity: ent.Entity):
         # TODO: push this to the handler
         entity.set_scale(self.scale_factor)
         # -------------------
         self.entities[entity.get_ent_id()] = entity
-        sprites_scaled = []
-        for s_list in entity.get_sprites():
-            sprites_scaled.append([self.scale_surface(s) for s in s_list])
-        self.sprites_list[entity.get_ent_id()] = sprites_scaled
+        self.sprites_list[entity.get_ent_id()] = self.scale_all_sprites_list(entity.get_sprites())
 
     def get_entities(self):
         return self.entities

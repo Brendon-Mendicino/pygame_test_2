@@ -63,11 +63,18 @@ def main():
             if event.type == pyg.KEYDOWN:
                 if event.key == pyg.K_ESCAPE:
                     loop = False
-                else:
+                elif event.key == pyg.K_0:
+                    screen.set_window_resolution(0)
+                elif event.key == pyg.K_1:
+                    screen.set_window_resolution(1)
+                elif event.key == pyg.K_2:
+                    screen.set_window_resolution(2)
+                elif set(event_key_case_down.keys()).issuperset([event.key]):
                     pp.set_offset_speed(event_key_case_down[event.key])
 
             if event.type == pyg.KEYUP:
-                pp.set_offset_speed(event_key_case_up[event.key])
+                if set(event_key_case_up.keys()).issuperset([event.key]):
+                    pp.set_offset_speed(event_key_case_up[event.key])
 
         pp.update_sprite_frame(delta_t)
         pp.update_position(delta_t)
