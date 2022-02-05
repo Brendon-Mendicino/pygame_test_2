@@ -11,6 +11,18 @@ class Handler:
     def __init__(self):
         pass
 
+    def game_events(self, event: pyg.event.Event):
+        if event.type == pyg.QUIT:
+            loop = False
+        if event.type == pyg.KEYDOWN:
+            if event.key == pyg.K_ESCAPE:
+                loop = False
+            else:
+                pp.set_offset_speed(event_key_case_down[event.key])
+
+        if event.type == pyg.KEYUP:
+            pp.set_offset_speed(event_key_case_up[event.key])
+
 
 def main():
     pyg.init()
@@ -57,7 +69,7 @@ def main():
             if event.type == pyg.KEYUP:
                 pp.set_offset_speed(event_key_case_up[event.key])
 
-        pp.update_sprite()
+        pp.update_sprite_frame(delta_t)
         pp.update_position(delta_t)
 
         screen.update_entities_to_draw()

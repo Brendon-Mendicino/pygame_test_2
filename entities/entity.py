@@ -74,8 +74,10 @@ class Entity:
         self.previous_scale_factor = self.scale_factor
 
         self.curr_animation_type = IDLE
-        self.curr_sprite_show = 0
+        self.curr_sprite_to_show = 0
         self.curr_sprite_vector_len = 0
+        self.sprite_frames_per_sec = 10
+        self.time_sum_ms = 0
         self.assets = [self.sentinel_asset for n in range(NUMBER_OF_ANIMATION_TYPE)]
 
         self.stats = Stats()
@@ -123,7 +125,7 @@ class Entity:
         return [self.curr_animation_type, self.assets[self.curr_animation_type].get_animation_frames()]
 
     def get_current_sprite_info(self):
-        return [self.curr_animation_type, self.curr_sprite_show]
+        return [self.curr_animation_type, self.curr_sprite_to_show]
 
     def move(self, delta_x, delta_y):
         self.x += delta_x
@@ -131,11 +133,15 @@ class Entity:
 
     def set_animation_type(self, type):
         self.curr_animation_type = type
-        self.curr_sprite_show = 0
+        self.curr_sprite_to_show = 0
         self.curr_sprite_vector_len = len(self.assets[type].get_animation_frames())
 
-    def update_sprite(self):
-        self.curr_sprite_show = (self.curr_sprite_show + 1) % self.curr_sprite_vector_len
+    def update_sprite_frame(self, delta_t):
+        self.time_sum_ms += delta_t
+        n_frames = self.time_sum_ms * self.sprite_frames_per_sec // 1000
+        # time_sum_ms % [ 1000frame / (1frame/ms) ] = [ 1frame / (1frame/s) ]
+        self.time_sum_ms = self.time_sum_ms % (1000 // self.sprite_frames_per_sec)
+        self.curr_sprite_to_show = (self.curr_sprite_to_show + n_frames) % self.curr_sprite_vector_len
 
     def update_position(self, delta_t):
         # time in 'ms'
