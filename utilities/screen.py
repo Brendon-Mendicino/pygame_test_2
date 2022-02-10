@@ -152,8 +152,8 @@ class Screen:
         return (pos[0]-self.display_x_offset, pos[1]-self.display_y_offset)
 
     def update_display_position(self, new_center):
-        self.display_x_offset = new_center[0] - self.display_size[0] // 2
-        self.display_y_offset = new_center[1] - self.display_size[1] // 2
+        self.display_x_offset = new_center[0] - (self.display_size[0] >> 1)
+        self.display_y_offset = new_center[1] - (self.display_size[1] >> 1)
 
     def draw(self):
         self.display.fill((0, 0, 0))
