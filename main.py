@@ -38,19 +38,8 @@ def main():
     FPS = 60
     loop = True
 
-    vel = 0.4
-    event_key_case_down = {
-            pyg.K_DOWN: (0, vel),
-            pyg.K_UP: (0, -vel),
-            pyg.K_RIGHT: (vel, 0),
-            pyg.K_LEFT: (-vel, 0),
-            }
-    event_key_case_up = {
-            pyg.K_DOWN: (0, -vel),
-            pyg.K_UP: (0, vel),
-            pyg.K_RIGHT: (-vel, 0),
-            pyg.K_LEFT: (vel, 0),
-            }
+    # TODO: temp
+    k_set = { pyg.K_DOWN, pyg.K_UP, pyg.K_RIGHT, pyg.K_LEFT, }
 
     delta_t = 0
     while loop:
@@ -69,12 +58,12 @@ def main():
                     screen.set_window_resolution(1)
                 elif event.key == pyg.K_2:
                     screen.set_window_resolution(2)
-                elif set(event_key_case_down.keys()).issuperset([event.key]):
-                    pp.set_offset_speed(event_key_case_down[event.key])
+                elif k_set.issuperset([event.key]):
+                    pp.set_input_direction(event.key)
 
             if event.type == pyg.KEYUP:
-                if set(event_key_case_up.keys()).issuperset([event.key]):
-                    pp.set_offset_speed(event_key_case_up[event.key])
+                if k_set.issuperset([event.key]):
+                    pp.set_input_direction(event.key)
 
         pp.update_sprite_frame(delta_t)
         pp.update_position(delta_t)
