@@ -88,7 +88,8 @@ class Screen:
         self.tile_len_scaled = math.floor( TILE_LEN * self.scale_factor)
 
         self.display = pyg.display.set_mode(self.display_size)
-
+        
+        # TODO: move scaling to the handler
         self.load_tileset_assets()
         for ent_id in list(self.entities.keys()):
             self.entities[ent_id].set_scale(self.scale_factor)
@@ -164,7 +165,7 @@ class Screen:
         y_off = self.display_y_offset % self.tile_len_scaled
 
         # The display can't go above the 0 limit of the matrix
-        for i, row in enumerate(self.current_area.get_tiles()[y_start:y_start+TILE_ON_SCREEN_H+1]):
+        for i, row in enumerate(self.current_area.get_tileset()[y_start:y_start+TILE_ON_SCREEN_H+1]):
             for j, tile_id in enumerate(row[x_start:x_start+TILE_ON_SCREEN_W+1]):
                 self.display.blit(
                         self.tileset[tile_id],
@@ -175,6 +176,13 @@ class Screen:
             self.display.blit(
                     self.get_sprite_by_id(id),
                     self.center_sprite_pos(self.entities[id].get_pos()))
+
+        # TODO: push this to some testing class fro Screen
+        ''' draw a rect on the the entities
+        for id in self.ent_to_draw:
+            pyg.draw.rect(self.display, (0xFF,0,0), pyg.rect.Rect(
+                self.center_sprite_pos(self.entities[id].get_pos()), self.get_sprite_by_id(id).get_size()))
+        '''
         
         #self.window_surface.blit(pyg.transform.scale(self.display, self.window_size), (0, 0))
         pyg.display.update()

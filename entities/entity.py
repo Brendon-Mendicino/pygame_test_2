@@ -94,6 +94,9 @@ class Entity:
     def get_center_pos(self) -> tuple:
         return ((self.x+self.size[0])//self.scale, (self.y+self.size[1])//self.scale)
 
+    def set_pos(self, pos, scale=None):
+        pass
+
     def set_scale(self, scale: float):
         # the scale factore is scaled to 100 to eliminte the float type and use int calculus
         self.previous_scale_factor = self.scale_factor

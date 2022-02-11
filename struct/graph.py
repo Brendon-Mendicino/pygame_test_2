@@ -1,7 +1,9 @@
 
+class Node:
+    pass
 
 
-class Grap:
+class Graph:
 
     def __init__(self):
         self.n_vertices = 0
@@ -19,3 +21,6 @@ class Grap:
     def add_arch(self, arch):
         self.adjacent_list[self.symbol_table[arhc[0]]].append(self.symbol_table[arch[1]])
         self.adjacent_list[self.symbol_table[arhc[1]]].append(self.symbol_table[arch[0]])
+
+    def search(self, start, finish):
+        pass

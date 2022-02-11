@@ -19,7 +19,11 @@ class Game:
         pyg.init()
 
         self.screen = uts.Screen()
-        self.screen.set_area(uts.Area('./areas/01area.txt'))
+        self.area = uts.Area('./areas/01area.txt')
+        # TODO: for testing
+        self.area.set_scale(self.screen.find_scale_factor())
+        #####################
+        self.screen.set_area(self.area)
         
         self.player = ent.Player(0, (240, 150))
         self.player.set_animation_type(ent.IDLE)
@@ -39,12 +43,16 @@ class Game:
 
             self.player.update_sprite_frame(delta_t)
             self.player.update_position(delta_t)
+            # TODO: for testing
+            print(self.area.check_collision(self.player))
+            #####################
 
             self.screen.update_entities_to_draw()
             self.screen.update_display_position(self.player.get_center_pos())
             self.screen.draw()
 
         pyg.quit()
+
 
     def game_events(self, event: pyg.event.Event):
         if event.type == pyg.QUIT:
