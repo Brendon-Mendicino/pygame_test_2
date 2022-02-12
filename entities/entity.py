@@ -88,6 +88,9 @@ class Entity:
     def get_pos(self) -> tuple:
         return (self.x//self.scale, self.y//self.scale)
 
+    def get_velocity(self) -> tuple:
+        return (self.delta_vx, self.delta_vy)
+
     def get_size(self) -> tuple:
         return (self.size[0]//self.scale, self.size[1]//self.scale)
 

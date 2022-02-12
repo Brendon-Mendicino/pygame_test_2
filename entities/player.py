@@ -24,7 +24,7 @@ class Player(Entity):
     def __init__(self, ent_id, pos):
         super().__init__(ent_id, pos, (30, 30))
         super().add_assets(0, 10, [0, 1, 2, 3],
-                [ASSETS_PATH+'player/player_main_'+end for end in ['front.png', 'left.png', 'right.png', 'back.png']])
+                [ASSETS_PATH+'player/player_main_'+end for end in ['front.png', 'left.png','back.png', 'right.png']])
 
 
     def set_input_direction(self, direction):
