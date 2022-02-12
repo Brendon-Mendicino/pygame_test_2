@@ -95,7 +95,12 @@ class Entity:
         return ((self.x+self.size[0])//self.scale, (self.y+self.size[1])//self.scale)
 
     def set_pos(self, pos, scale=None):
-        pass
+        if scale is None:
+            self.x = pos[0]*self.scale
+            self.y = pos[1]*self.scale
+        else:
+            self.x = pos[0]*scale
+            self.y = pos[1]*scale
 
     def set_scale(self, scale: float):
         # the scale factore is scaled to 100 to eliminte the float type and use int calculus

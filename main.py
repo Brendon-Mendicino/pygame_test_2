@@ -44,7 +44,7 @@ class Game:
             self.player.update_sprite_frame(delta_t)
             self.player.update_position(delta_t)
             # TODO: for testing
-            print(self.area.check_collision(self.player))
+            self.area.fix_collions(self.player)
             #####################
 
             self.screen.update_entities_to_draw()
