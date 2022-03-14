@@ -37,6 +37,7 @@ class Game:
         delta_t = 0
         while self.loop:
             delta_t = self.clock.tick(self.FPS)
+            delta_t = delta_t if delta_t < 90 else 90
 
             for event in pyg.event.get():
                 self.game_events(event)

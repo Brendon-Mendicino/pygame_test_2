@@ -232,7 +232,6 @@ class Area:
                 else:
                     if angle is (TOP|RIGHT):
                         # calculte angular coeffiction
-                        print((tile_pos[1]+self.tile_len-prev_pos[1])/(tile_pos[0]-prev_pos[0]))
                         if (tile_pos[1]+self.tile_len-prev_pos[1])/(tile_pos[0]-prev_pos[0]) < -1.0:
                             pos = (pos[0], tile_pos[1]+self.tile_len)
                         else:
